@@ -1,0 +1,56 @@
+#include <NewPing.h>
+#define TRIGGER_PIN 8
+#define ECHO_PIN 7
+#define MAX_DISTANCE 400
+#include <LiquidCrystal_I2C.h>
+#include <Wire.h>
+#include <SoftwareSerial.h>
+ 
+NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE);
+ 
+float my_1 = 0;
+float my_2 = 0;
+float print = 0;
+ 
+LiquidCrystal_I2C lcd_I2C_27(0x27, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);
+ 
+void _delay(float seconds) {
+  long endTime = millis() + seconds * 1000;
+  while(millis() < endTime) _loop();
+}
+ 
+void setup() {
+  lcd_I2C_27.begin(16, 2);
+  Serial.begin(115200);
+ 
+  while(1) {
+      my_1 = sonar.ping();
+      _delay(1);
+      my_2 = sonar.ping();
+      if(my_1 > my_2){
+          print = ((my_1 - my_2));
+          lcd_I2C_27.setCursor( (1) - 1, (1) - 1 );
+          lcd_I2C_27.print( print );
+          lcd_I2C_27.setCursor( (1) - 1, (2) - 1 );
+          lcd_I2C_27.print( "Cm/s" );
+ 
+      }else{
+          print = ((my_2 - my_1));
+          lcd_I2C_27.setCursor( (1) - 1, (1) - 1 );
+          lcd_I2C_27.print( print );
+          lcd_I2C_27.setCursor( (1) - 1, (2) - 1 );
+          lcd_I2C_27.print( "Cm/s" );
+ 
+      }
+ 
+      _loop();
+  }
+ 
+}
+ 
+void _loop() {
+}
+ 
+void loop() {
+  _loop();
+}
